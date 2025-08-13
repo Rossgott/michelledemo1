@@ -1,0 +1,58 @@
+[build]
+  # No build command needed for static site
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[headers]]
+  # Apply these headers to all routes
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+    # Cache static assets for 1 year
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  # Different cache policy for HTML
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  # CSV files should not be cached aggressively
+  for = "/*.csv"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# Redirect rules (optional)
+[[redirects]]
+  from = "/dashboard"
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/app"
+  to = "/"
+  status = 301
+
+# Custom error pages (optional)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  # This is a SPA fallback rule for client-side routing
+  # Not needed for this app but good to have
+
+# Form handling (if you add contact forms later)
+# [build]
+#   functions = "netlify/functions"
+
+# Environment variables (if needed)
+# [build.environment]
+#   CUSTOM_VAR = "value"

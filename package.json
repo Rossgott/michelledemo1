@@ -1,0 +1,40 @@
+{
+  "name": "michelle-data-dashboard",
+  "version": "1.0.0",
+  "description": "A beautiful, interactive web application for analyzing CSV and JSON data files",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve . --listen 3000",
+    "build": "echo 'No build step required for static site'",
+    "deploy:surge": "surge . --domain michelle-data-dashboard.surge.sh",
+    "deploy:vercel": "vercel --prod",
+    "validate": "echo 'Validating files...' && test -s index.html && test -s script.js && test -s styles.css && echo 'All files valid!'"
+  },
+  "keywords": [
+    "data-analysis",
+    "dashboard",
+    "csv",
+    "json",
+    "charts",
+    "statistics",
+    "visualization",
+    "web-app"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "homepage": "https://github.com/yourusername/Michelle#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/Michelle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/Michelle/issues"
+  },
+  "devDependencies": {
+    "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

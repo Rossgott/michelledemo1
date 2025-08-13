@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Data Analysis Dashboard</h1>
+            <p>Upload your CSV or JSON file to discover themes, patterns, and correlations</p>
+        </header>
+
+        <main>
+            <!-- File Upload Section -->
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <div class="upload-icon">📁</div>
+                        <h3>Choose or Drop Your Data File</h3>
+                        <p>Supports CSV and JSON files</p>
+                        <input type="file" id="fileInput" accept=".csv,.json" hidden>
+                        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                            Select File
+                        </button>
+                    </div>
+                </div>
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <h4>File Information</h4>
+                    <div id="fileDetails"></div>
+                </div>
+            </section>
+
+            <!-- Loading Section -->
+            <section class="loading-section" id="loadingSection" style="display: none;">
+                <div class="loader"></div>
+                <p>Analyzing your data...</p>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                
+                <!-- Data Overview -->
+                <div class="analysis-card">
+                    <h2>📋 Data Overview</h2>
+                    <div id="dataOverview"></div>
+                </div>
+
+                <!-- Common Themes -->
+                <div class="analysis-card">
+                    <h2>🔍 Common Themes</h2>
+                    <div id="themesContent">
+                        <div id="themesList"></div>
+                        <div class="chart-container">
+                            <canvas id="themesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Theme Explanations -->
+                <div class="analysis-card">
+                    <h2>💡 Theme Explanations</h2>
+                    <div id="explanationsContent"></div>
+                </div>
+
+                <!-- Correlations -->
+                <div class="analysis-card">
+                    <h2>📈 Correlations</h2>
+                    <div id="correlationsContent">
+                        <div id="correlationsList"></div>
+                        <div class="chart-container">
+                            <canvas id="correlationsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Series Analysis (for time-based data) -->
+                <div class="analysis-card" id="timeSeriesCard" style="display: none;">
+                    <h2>⏰ Time Series Analysis</h2>
+                    <div class="chart-container">
+                        <canvas id="timeSeriesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Distribution Analysis -->
+                <div class="analysis-card">
+                    <h2>📊 Data Distributions</h2>
+                    <div class="chart-container">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+
+        <footer>
+            <p>Built with ❤️ for data analysis</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
