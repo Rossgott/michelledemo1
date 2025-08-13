@@ -9,6 +9,7 @@ class ComprehensiveDataAnalyzer {
         this.dateColumns = [];
         this.categoricalColumns = [];
         this.analysisResults = {};
+        this.charts = {}; // Store chart instances to properly destroy them
         this.init();
     }
 
@@ -694,6 +695,9 @@ class ComprehensiveDataAnalyzer {
     showResults() {
         this.hideLoading();
         
+        // Destroy any existing charts first
+        this.destroyAllCharts();
+        
         const resultsSection = document.getElementById('resultsSection');
         resultsSection.style.display = 'block';
         resultsSection.classList.add('fade-in');
@@ -708,6 +712,16 @@ class ComprehensiveDataAnalyzer {
         this.displayAdvancedInsights();
         this.displayRecommendations();
         this.displayDetailedTables();
+    }
+
+    destroyAllCharts() {
+        // Destroy all existing Chart.js instances
+        Object.keys(this.charts).forEach(chartId => {
+            if (this.charts[chartId]) {
+                this.charts[chartId].destroy();
+                delete this.charts[chartId];
+            }
+        });
     }
 
     displayExecutiveSummary() {
@@ -995,7 +1009,7 @@ class ComprehensiveDataAnalyzer {
             bins[binIndex]++;
         });
 
-        new Chart(ctx, {
+        this.charts.performanceChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: binLabels,
@@ -1035,7 +1049,7 @@ class ComprehensiveDataAnalyzer {
         const labels = Object.keys(segments);
         const data = labels.map(label => segments[label].length);
 
-        new Chart(ctx, {
+        this.charts.demographicChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: labels,
@@ -1077,7 +1091,7 @@ class ComprehensiveDataAnalyzer {
         })).filter(point => !isNaN(point.y) && !isNaN(point.x.getTime()))
           .sort((a, b) => a.x - b.x);
 
-        new Chart(ctx, {
+        this.charts.timeSeriesChart = new Chart(ctx, {
             type: 'line',
             data: {
                 datasets: [{
@@ -1124,8 +1138,55 @@ class ComprehensiveDataAnalyzer {
             return;
         }
 
-        // Use the same logic as performance chart for consistency
-        this.createPerformanceChart();
+        // Create a separate distribution chart (not reusing performance chart)
+        const primaryMetric = this.numericColumns[0];
+        const values = this.data.map(row => parseFloat(row[primaryMetric])).filter(v => !isNaN(v));
+        
+        // Create histogram
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const binCount = Math.min(15, Math.ceil(Math.sqrt(values.length)));
+        const binWidth = (max - min) / binCount;
+        
+        const bins = Array(binCount).fill(0);
+        const binLabels = [];
+        
+        for (let i = 0; i < binCount; i++) {
+            const binStart = min + i * binWidth;
+            const binEnd = min + (i + 1) * binWidth;
+            binLabels.push(`${binStart.toFixed(2)}`);
+        }
+        
+        values.forEach(value => {
+            const binIndex = Math.min(Math.floor((value - min) / binWidth), binCount - 1);
+            bins[binIndex]++;
+        });
+
+        this.charts.distributionChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: binLabels,
+                datasets: [{
+                    label: 'Distribution',
+                    data: bins,
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `${this.formatColumnName(primaryMetric)} Statistical Distribution`
+                    }
+                }
+            }
+        });
     }
 
     createCorrelationChart() {
@@ -1139,7 +1200,7 @@ class ComprehensiveDataAnalyzer {
 
         const topCorrelations = correlations.slice(0, 10);
         
-        new Chart(ctx, {
+        this.charts.correlationChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: topCorrelations.map(corr => `${corr.column1} vs ${corr.column2}`),
