@@ -38,60 +38,97 @@
             <!-- Loading Section -->
             <section class="loading-section" id="loadingSection" style="display: none;">
                 <div class="loader"></div>
-                <p>Analyzing your data...</p>
+                <p>Performing comprehensive data analysis...</p>
             </section>
 
             <!-- Results Section -->
             <section class="results-section" id="resultsSection" style="display: none;">
                 
+                <!-- Executive Summary -->
+                <div class="analysis-card executive-summary">
+                    <h2>🎯 Executive Summary</h2>
+                    <div class="metrics-grid" id="executiveSummary"></div>
+                    <div id="keyFindings"></div>
+                </div>
+
                 <!-- Data Overview -->
                 <div class="analysis-card">
-                    <h2>📋 Data Overview</h2>
+                    <h2>📋 Data Overview & Quality Assessment</h2>
                     <div id="dataOverview"></div>
+                    <div id="dataQuality"></div>
                 </div>
 
-                <!-- Common Themes -->
+                <!-- Performance Analysis -->
                 <div class="analysis-card">
-                    <h2>🔍 Common Themes</h2>
-                    <div id="themesContent">
-                        <div id="themesList"></div>
+                    <h2>📈 Performance Analysis</h2>
+                    <div id="performanceAnalysis">
                         <div class="chart-container">
-                            <canvas id="themesChart"></canvas>
+                            <canvas id="performanceChart"></canvas>
                         </div>
+                        <div id="performanceInsights"></div>
                     </div>
                 </div>
 
-                <!-- Theme Explanations -->
-                <div class="analysis-card">
-                    <h2>💡 Theme Explanations</h2>
-                    <div id="explanationsContent"></div>
-                </div>
-
-                <!-- Correlations -->
-                <div class="analysis-card">
-                    <h2>📈 Correlations</h2>
-                    <div id="correlationsContent">
-                        <div id="correlationsList"></div>
+                <!-- Demographic Analysis -->
+                <div class="analysis-card" id="demographicCard" style="display: none;">
+                    <h2>👥 Demographic Analysis</h2>
+                    <div id="demographicAnalysis">
                         <div class="chart-container">
-                            <canvas id="correlationsChart"></canvas>
+                            <canvas id="demographicChart"></canvas>
                         </div>
+                        <div id="demographicInsights"></div>
                     </div>
                 </div>
 
-                <!-- Time Series Analysis (for time-based data) -->
+                <!-- Time Series Analysis -->
                 <div class="analysis-card" id="timeSeriesCard" style="display: none;">
-                    <h2>⏰ Time Series Analysis</h2>
-                    <div class="chart-container">
-                        <canvas id="timeSeriesChart"></canvas>
+                    <h2>⏰ Temporal Analysis</h2>
+                    <div id="timeSeriesAnalysis">
+                        <div class="chart-container">
+                            <canvas id="timeSeriesChart"></canvas>
+                        </div>
+                        <div id="timeSeriesInsights"></div>
                     </div>
                 </div>
 
-                <!-- Distribution Analysis -->
+                <!-- Statistical Analysis -->
                 <div class="analysis-card">
-                    <h2>📊 Data Distributions</h2>
-                    <div class="chart-container">
-                        <canvas id="distributionChart"></canvas>
+                    <h2>📊 Statistical Analysis</h2>
+                    <div id="statisticalAnalysis">
+                        <div class="chart-container">
+                            <canvas id="distributionChart"></canvas>
+                        </div>
+                        <div id="statisticalInsights"></div>
                     </div>
+                </div>
+
+                <!-- Correlation Analysis -->
+                <div class="analysis-card">
+                    <h2>🔗 Correlation Analysis</h2>
+                    <div id="correlationAnalysis">
+                        <div class="chart-container">
+                            <canvas id="correlationChart"></canvas>
+                        </div>
+                        <div id="correlationInsights"></div>
+                    </div>
+                </div>
+
+                <!-- Advanced Insights -->
+                <div class="analysis-card">
+                    <h2>🧠 Advanced Insights</h2>
+                    <div id="advancedInsights"></div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="analysis-card recommendations-card">
+                    <h2>🚀 Strategic Recommendations</h2>
+                    <div id="recommendations"></div>
+                </div>
+
+                <!-- Detailed Data Tables -->
+                <div class="analysis-card">
+                    <h2>📋 Detailed Data Analysis</h2>
+                    <div id="detailedTables"></div>
                 </div>
 
             </section>
