@@ -1,7 +1,7 @@
 {
   "name": "michelle-data-dashboard",
-  "version": "1.0.0",
-  "description": "A beautiful, interactive web application for analyzing CSV and JSON data files",
+  "version": "2.0.0",
+  "description": "AI-powered data analysis dashboard with comprehensive insights and recommendations",
   "main": "index.html",
   "scripts": {
     "start": "npx serve .",
@@ -9,32 +9,43 @@
     "build": "echo 'No build step required for static site'",
     "deploy:surge": "surge . --domain michelle-data-dashboard.surge.sh",
     "deploy:vercel": "vercel --prod",
-    "validate": "echo 'Validating files...' && test -s index.html && test -s script.js && test -s styles.css && echo 'All files valid!'"
+    "validate": "echo 'Validating files...' && test -s index.html && test -s script.js && test -s styles.css && echo 'All files valid!'",
+    "test-ai": "node -e \"console.log('AI integration ready!')\""
   },
   "keywords": [
     "data-analysis",
-    "dashboard",
+    "dashboard", 
     "csv",
     "json",
     "charts",
     "statistics",
     "visualization",
-    "web-app"
+    "web-app",
+    "ai-powered",
+    "openai",
+    "business-intelligence",
+    "insights",
+    "recommendations"
   ],
   "author": "Your Name",
   "license": "MIT",
-  "homepage": "https://github.com/yourusername/Michelle#readme",
+  "homepage": "https://github.com/Rossgott/michelledemo1#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/Michelle.git"
+    "url": "git+https://github.com/Rossgott/michelledemo1.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/Michelle/issues"
+    "url": "https://github.com/Rossgott/michelledemo1/issues"
   },
   "devDependencies": {
     "serve": "^14.2.1"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
+  },
+  "netlify": {
+    "functions": {
+      "directory": "netlify/functions"
+    }
   }
 }

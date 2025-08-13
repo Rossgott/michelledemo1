@@ -183,7 +183,7 @@ class ComprehensiveDataAnalyzer {
     }
 
     async performComprehensiveAnalysis() {
-        console.log('Starting comprehensive analysis...');
+        console.log('Starting comprehensive analysis with AI...');
         
         // Step 1: Data profiling and quality assessment
         this.identifyColumnTypes();
@@ -199,12 +199,117 @@ class ComprehensiveDataAnalyzer {
         this.performStatisticalAnalysis();
         this.performCorrelationAnalysis();
         
-        // Step 4: Generate insights and recommendations
-        this.generateAdvancedInsights();
-        this.generateRecommendations();
+        // Step 4: AI-powered analysis (with fallback)
+        try {
+            await this.performAIAnalysis();
+        } catch (error) {
+            console.warn('AI analysis failed, using statistical analysis:', error);
+            this.generateAdvancedInsights();
+            this.generateRecommendations();
+        }
         
         // Add delay for better UX
         await new Promise(resolve => setTimeout(resolve, 1500));
+    }
+
+    async performAIAnalysis() {
+        console.log('Performing AI analysis...');
+        
+        // Prepare data for AI analysis
+        const dataPreview = this.prepareDataForAI();
+        const summary = this.generateAISummary();
+        
+        try {
+            // Call our Netlify function
+            const response = await fetch('/.netlify/functions/ai-analysis', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    dataPreview: dataPreview,
+                    columns: this.columns,
+                    summary: summary
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`AI analysis failed: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success && result.analysis) {
+                this.analysisResults.aiAnalysis = result.analysis;
+                this.enhanceAnalysisWithAI(result.analysis);
+                console.log('AI analysis completed successfully');
+            } else {
+                throw new Error('Invalid AI response format');
+            }
+            
+        } catch (error) {
+            console.error('AI Analysis Error:', error);
+            // Fallback to statistical analysis
+            this.generateAdvancedInsights();
+            this.generateRecommendations();
+            throw error; // Re-throw to trigger fallback in main function
+        }
+    }
+
+    prepareDataForAI() {
+        // Send a representative sample of the data (first 15 rows)
+        const sampleSize = Math.min(15, this.data.length);
+        return this.data.slice(0, sampleSize);
+    }
+
+    generateAISummary() {
+        // Generate summary statistics for AI context
+        const summary = {
+            totalRows: this.data.length,
+            totalColumns: this.columns.length,
+            numericColumns: this.numericColumns,
+            dateColumns: this.dateColumns,
+            categoricalColumns: this.categoricalColumns,
+            statistics: {}
+        };
+
+        // Add basic statistics for numeric columns
+        this.numericColumns.forEach(col => {
+            const values = this.data.map(row => parseFloat(row[col])).filter(v => !isNaN(v));
+            if (values.length > 0) {
+                summary.statistics[col] = {
+                    count: values.length,
+                    mean: (values.reduce((a, b) => a + b, 0) / values.length).toFixed(2),
+                    min: Math.min(...values),
+                    max: Math.max(...values),
+                    sum: values.reduce((a, b) => a + b, 0)
+                };
+            }
+        });
+
+        return summary;
+    }
+
+    enhanceAnalysisWithAI(aiAnalysis) {
+        // Replace or enhance existing analysis with AI insights
+        if (aiAnalysis.businessRecommendations) {
+            this.analysisResults.recommendations = aiAnalysis.businessRecommendations;
+        }
+
+        if (aiAnalysis.keyInsights) {
+            this.analysisResults.advancedInsights = aiAnalysis.keyInsights.map((insight, index) => ({
+                type: 'ai_insight',
+                title: `AI Insight ${index + 1}`,
+                description: insight
+            }));
+        }
+
+        // Store additional AI insights
+        this.analysisResults.aiPatterns = aiAnalysis.patterns || [];
+        this.analysisResults.aiAnomalies = aiAnalysis.anomalies || [];
+        this.analysisResults.aiPredictions = aiAnalysis.predictions || [];
+        this.analysisResults.dataQualityAssessment = aiAnalysis.dataQualityAssessment || '';
+        this.analysisResults.nextSteps = aiAnalysis.nextSteps || [];
     }
 
     identifyColumnTypes() {
@@ -928,28 +1033,193 @@ class ComprehensiveDataAnalyzer {
     }
 
     displayAdvancedInsights() {
-        const insights = this.analysisResults.advancedInsights;
+        const insights = this.analysisResults.advancedInsights || [];
+        const aiAnalysis = this.analysisResults.aiAnalysis;
         const container = document.getElementById('advancedInsights');
         
-        const insightsHtml = insights.map(insight => `
-            <div class="insight-item ${insight.type}">
-                <h4>${insight.title}</h4>
-                <p>${insight.description}</p>
-            </div>
-        `).join('');
+        let html = '';
         
-        container.innerHTML = insightsHtml || '<p>No advanced insights generated for this dataset.</p>';
+        // Display AI Analysis if available
+        if (aiAnalysis) {
+            html += `
+                <div class="ai-analysis-section">
+                    <div class="ai-header-badge">
+                        <span class="ai-badge-icon">🤖</span>
+                        <span>AI-Powered Analysis</span>
+                    </div>
+                    
+                    <div class="ai-executive-summary">
+                        <h4>📋 Executive Summary</h4>
+                        <p class="ai-summary-text">${aiAnalysis.executiveSummary}</p>
+                    </div>
+                    
+                    ${aiAnalysis.keyInsights && aiAnalysis.keyInsights.length > 0 ? `
+                        <div class="ai-insights-grid">
+                            <h4>💡 Key Insights</h4>
+                            <div class="insights-cards">
+                                ${aiAnalysis.keyInsights.map((insight, index) => `
+                                    <div class="insight-card">
+                                        <div class="insight-number">${index + 1}</div>
+                                        <div class="insight-content">${insight}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${aiAnalysis.patterns && aiAnalysis.patterns.length > 0 ? `
+                        <div class="ai-patterns">
+                            <h4>🔍 Patterns Detected</h4>
+                            <ul class="pattern-list">
+                                ${aiAnalysis.patterns.map(pattern => `<li>${pattern}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${aiAnalysis.anomalies && aiAnalysis.anomalies.length > 0 ? `
+                        <div class="ai-anomalies">
+                            <h4>⚠️ Anomalies Found</h4>
+                            <ul class="anomaly-list">
+                                ${aiAnalysis.anomalies.map(anomaly => `<li>${anomaly}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${aiAnalysis.predictions && aiAnalysis.predictions.length > 0 ? `
+                        <div class="ai-predictions">
+                            <h4>🔮 Predictive Insights</h4>
+                            <ul class="prediction-list">
+                                ${aiAnalysis.predictions.map(prediction => `<li>${prediction}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${aiAnalysis.dataQualityAssessment ? `
+                        <div class="ai-quality-assessment">
+                            <h4>📊 Data Quality Assessment</h4>
+                            <p>${aiAnalysis.dataQualityAssessment}</p>
+                        </div>
+                    ` : ''}
+                    
+                    ${aiAnalysis.nextSteps && aiAnalysis.nextSteps.length > 0 ? `
+                        <div class="ai-next-steps">
+                            <h4>🎯 Next Steps</h4>
+                            <ol class="next-steps-list">
+                                ${aiAnalysis.nextSteps.map(step => `<li>${step}</li>`).join('')}
+                            </ol>
+                        </div>
+                    ` : ''}
+                    
+                    ${aiAnalysis.metadata ? `
+                        <div class="ai-metadata">
+                            <small>Analysis completed at ${new Date(aiAnalysis.metadata.timestamp).toLocaleString()} using ${aiAnalysis.metadata.model}</small>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        // Add traditional insights if no AI insights or as supplement
+        if (insights.length > 0 && !aiAnalysis) {
+            html += `<div class="traditional-insights">`;
+            html += insights.map(insight => `
+                <div class="insight-item ${insight.type}">
+                    <h4>${insight.title}</h4>
+                    <p>${insight.description}</p>
+                </div>
+            `).join('');
+            html += `</div>`;
+        }
+        
+        container.innerHTML = html || '<p>No advanced insights generated for this dataset.</p>';
     }
 
     displayRecommendations() {
-        const recommendations = this.analysisResults.recommendations;
+        const recommendations = this.analysisResults.recommendations || [];
         const container = document.getElementById('recommendations');
         
-        container.innerHTML = `
-            <ul class="recommendations-list">
-                ${recommendations.map(rec => `<li>${rec.description}</li>`).join('')}
-            </ul>
-        ` || '<p>No specific recommendations generated for this dataset.</p>';
+        let html = '';
+        
+        if (recommendations.length > 0) {
+            // Check if recommendations are AI-generated (have priority structure)
+            const hasAIRecommendations = recommendations.some(rec => rec.priority && rec.title);
+            
+            if (hasAIRecommendations) {
+                // Display AI recommendations with enhanced formatting
+                const highPriority = recommendations.filter(rec => rec.priority === 'high');
+                const mediumPriority = recommendations.filter(rec => rec.priority === 'medium');
+                const lowPriority = recommendations.filter(rec => rec.priority === 'low');
+                
+                html += `<div class="ai-recommendations">`;
+                
+                if (highPriority.length > 0) {
+                    html += `
+                        <div class="priority-section high-priority">
+                            <h4>🚨 High Priority Actions</h4>
+                            ${highPriority.map(rec => `
+                                <div class="recommendation-card high">
+                                    <div class="rec-header">
+                                        <h5>${rec.title}</h5>
+                                        <span class="priority-badge high">HIGH</span>
+                                    </div>
+                                    <p class="rec-description">${rec.description}</p>
+                                    ${rec.expectedImpact ? `<p class="rec-impact"><strong>Expected Impact:</strong> ${rec.expectedImpact}</p>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                if (mediumPriority.length > 0) {
+                    html += `
+                        <div class="priority-section medium-priority">
+                            <h4>⚡ Medium Priority Actions</h4>
+                            ${mediumPriority.map(rec => `
+                                <div class="recommendation-card medium">
+                                    <div class="rec-header">
+                                        <h5>${rec.title}</h5>
+                                        <span class="priority-badge medium">MEDIUM</span>
+                                    </div>
+                                    <p class="rec-description">${rec.description}</p>
+                                    ${rec.expectedImpact ? `<p class="rec-impact"><strong>Expected Impact:</strong> ${rec.expectedImpact}</p>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                if (lowPriority.length > 0) {
+                    html += `
+                        <div class="priority-section low-priority">
+                            <h4>💡 Future Considerations</h4>
+                            ${lowPriority.map(rec => `
+                                <div class="recommendation-card low">
+                                    <div class="rec-header">
+                                        <h5>${rec.title}</h5>
+                                        <span class="priority-badge low">LOW</span>
+                                    </div>
+                                    <p class="rec-description">${rec.description}</p>
+                                    ${rec.expectedImpact ? `<p class="rec-impact"><strong>Expected Impact:</strong> ${rec.expectedImpact}</p>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                html += `</div>`;
+            } else {
+                // Display traditional recommendations
+                html = `
+                    <ul class="recommendations-list">
+                        ${recommendations.map(rec => `<li>${rec.description || rec}</li>`).join('')}
+                    </ul>
+                `;
+            }
+        } else {
+            html = '<p>No specific recommendations generated for this dataset.</p>';
+        }
+        
+        container.innerHTML = html;
     }
 
     displayDetailedTables() {
